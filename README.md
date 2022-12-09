@@ -9,6 +9,7 @@ Uptime Check to periodically hit the Cloud Run URL.
 
 With the little Go library provided here, a probe can be defined with as little
 code as:
+
 ```go
 import (
 	"context"
@@ -31,6 +32,7 @@ func main() {
 
 With the terraform module provided here, a probe can be deployed with a little
 configuration as:
+
 ```terraform
 module "prober" {
   # TODO: Replace this with the appropriate URL when we open things up.
