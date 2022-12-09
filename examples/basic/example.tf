@@ -26,4 +26,8 @@ module "prober" {
 
   importpath  = "github.com/chainguard-dev/terraform-google-prober/examples/basic"
   working_dir = path.module
+
+  env = {
+    EXAMPLE_ENV = "honk"
+  }
 }
