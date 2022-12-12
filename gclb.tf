@@ -1,17 +1,22 @@
+/*
+Copyright 2022 Chainguard, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 locals {
   # GCLB is expensive, so we only provision one when we have to put multiple
   # Cloud Run locations behind one.
   use_gclb = length(var.locations) > 1
 }
 
-resource "google_compute_global_address" "static-ip" {
+resource "google_compute_global_address" "static_ip" {
   count = local.use_gclb ? 1 : 0
 
   project = var.project_id
   name    = "${var.name}-prober"
 }
 
-resource "google_compute_global_forwarding_rule" "forwarding-rule" {
+resource "google_compute_global_forwarding_rule" "forwarding_rule" {
   count = local.use_gclb ? 1 : 0
 
   project               = var.project_id
@@ -19,11 +24,11 @@ resource "google_compute_global_forwarding_rule" "forwarding-rule" {
   ip_protocol           = "TCP"
   load_balancing_scheme = "EXTERNAL"
   port_range            = 443
-  ip_address            = google_compute_global_address.static-ip[0].id
+  ip_address            = google_compute_global_address.static_ip[0].id
   target                = google_compute_target_https_proxy.prober[0].id
 }
 
-resource "google_dns_record_set" "prober-dns" {
+resource "google_dns_record_set" "prober_dns" {
   count = local.use_gclb ? 1 : 0
 
   project      = var.project_id
@@ -33,17 +38,17 @@ resource "google_dns_record_set" "prober-dns" {
   ttl          = 60
 
   rrdatas = [
-    google_compute_global_address.static-ip[0].address
+    google_compute_global_address.static_ip[0].address
   ]
 }
 
-resource "google_compute_managed_ssl_certificate" "prober-cert" {
+resource "google_compute_managed_ssl_certificate" "prober_cert" {
   count = local.use_gclb ? 1 : 0
 
   name = "${var.name}-prober"
 
   managed {
-    domains = [google_dns_record_set.prober-dns[0].name]
+    domains = [google_dns_record_set.prober_dns[0].name]
   }
 }
 
@@ -54,7 +59,7 @@ resource "google_compute_target_https_proxy" "prober" {
   name    = "${var.name}-prober"
   url_map = google_compute_url_map.probers[0].id
 
-  ssl_certificates = [google_compute_managed_ssl_certificate.prober-cert[0].id]
+  ssl_certificates = [google_compute_managed_ssl_certificate.prober_cert[0].id]
 }
 
 resource "google_compute_url_map" "probers" {

@@ -1,3 +1,8 @@
+/*
+Copyright 2022 Chainguard, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 terraform {
   required_providers {
     ko = {
@@ -88,7 +93,7 @@ resource "google_cloud_run_service_iam_policy" "noauths" {
 // This is the uptime check, which will send traffic to the Cloud Run
 // application every few minutes (from several locations) to ensure
 // things are operating as expected.
-resource "google_monitoring_uptime_check_config" "regional-uptime-check" {
+resource "google_monitoring_uptime_check_config" "regional_uptime_check" {
   count = local.use_gclb ? 0 : 1
 
   display_name = "${var.name}-uptime-regional"
@@ -127,7 +132,7 @@ resource "google_monitoring_uptime_check_config" "regional-uptime-check" {
 // This is the uptime check, which will send traffic to the GCLB
 // address every few minutes (from several locations) to ensure
 // things are operating as expected.
-resource "google_monitoring_uptime_check_config" "global-uptime-check" {
+resource "google_monitoring_uptime_check_config" "global_uptime_check" {
   count = local.use_gclb ? 1 : 0
 
   display_name = "${var.name}-uptime-global"

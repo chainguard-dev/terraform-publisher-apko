@@ -1,3 +1,8 @@
+/*
+Copyright 2022 Chainguard, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
 variable "name" {
   description = "Name to prefix to created resources."
 }
