@@ -43,7 +43,7 @@ resource "google_cloud_run_service" "probers" {
   for_each = toset(var.locations)
 
   project  = var.project_id
-  name     = "${var.name}-prb"
+  name     = "${format("%.45s", var.name)}-prb"
   location = each.key
 
   template {
