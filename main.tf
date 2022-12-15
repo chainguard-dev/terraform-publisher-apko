@@ -17,8 +17,8 @@ terraform {
 // Create a service account for the prober to run as.
 resource "google_service_account" "prober" {
   project = var.project_id
-  # Service accounts can be 30 characters long, so truncate var.name to 26 chars.
-  account_id = "${substr(var.name, 0, 26)}-prb"
+  # Service accounts can be 30 characters long, so truncate var.name to 23 chars.
+  account_id = "${substr(var.name, 0, 23)}-prober"
 }
 
 // Build the prober into an image we can run on Cloud Run.
@@ -42,8 +42,9 @@ resource "random_password" "secret" {
 resource "google_cloud_run_service" "probers" {
   for_each = toset(var.locations)
 
-  project  = var.project_id
-  name     = "${format("%.45s", var.name)}-prb"
+  project = var.project_id
+  # Cloud Run Service accounts can be 49 characters long, so truncate var.name to 45 chars.
+  name     = "${substr(var.name, 0, 45)}-prb"
   location = each.key
 
   template {
