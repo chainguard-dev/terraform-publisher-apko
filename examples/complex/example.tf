@@ -31,7 +31,8 @@ resource "google_dns_managed_zone" "prober-zone" {
 }
 
 module "prober" {
-  source = "./../../"
+  source  = "chainguard-dev/prober/google"
+  version = "v0.1.2"
 
   name       = "complex-example"
   project_id = var.project_id

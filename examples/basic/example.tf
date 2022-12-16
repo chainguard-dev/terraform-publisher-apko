@@ -19,7 +19,8 @@ variable "project_id" {
 }
 
 module "prober" {
-  source = "./../../"
+  source  = "chainguard-dev/prober/google"
+  version = "v0.1.2"
 
   name       = "basic-example"
   project_id = var.project_id

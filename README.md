@@ -35,8 +35,8 @@ configuration as:
 
 ```terraform
 module "prober" {
-  # TODO: Replace this with the appropriate URL when we open things up.
-  source = "./../../"
+  source  = "chainguard-dev/prober/google"
+  version = "v0.1.2"
 
   name       = "basic-example"
   project_id = var.project_id
