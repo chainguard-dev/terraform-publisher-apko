@@ -98,6 +98,7 @@ resource "google_monitoring_uptime_check_config" "regional_uptime_check" {
   count = local.use_gclb ? 0 : 1
 
   display_name = "${var.name}-uptime-regional"
+  project      = var.project_id
   timeout      = "60s"
   period       = "300s"
 
@@ -137,6 +138,7 @@ resource "google_monitoring_uptime_check_config" "global_uptime_check" {
   count = local.use_gclb ? 1 : 0
 
   display_name = "${var.name}-uptime-global"
+  project      = var.project_id
   timeout      = "60s"
   period       = "300s"
 
