@@ -14,6 +14,14 @@ terraform {
   }
 }
 
+locals {
+  repo = var.repository != "" ? var.repository : "gcr.io/${var.project_id}"
+}
+
+provider "ko" {
+  repo = local.repo
+}
+
 // Create a service account for the prober to run as.
 resource "google_service_account" "prober" {
   project = var.project_id
@@ -23,7 +31,7 @@ resource "google_service_account" "prober" {
 
 // Build the prober into an image we can run on Cloud Run.
 resource "ko_image" "image" {
-  base_image  = "cgr.dev/chainguard/static"
+  base_image  = var.base_image
   importpath  = var.importpath
   working_dir = var.working_dir
 }

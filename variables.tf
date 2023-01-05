@@ -12,6 +12,18 @@ variable "project_id" {
   description = "The project that will host the prober."
 }
 
+variable "base_image" {
+  type        = string
+  default     = "cgr.dev/chainguard/static"
+  description = "The base image that will be used to build the container image."
+}
+
+variable "repository" {
+  type        = string
+  default     = ""
+  description = "Container repository to publish images to."
+}
+
 variable "importpath" {
   type        = string
   description = "The import path that contains the prober application."
