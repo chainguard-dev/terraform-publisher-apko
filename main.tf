@@ -15,22 +15,12 @@ terraform {
 }
 
 locals {
-  repo = var.repository != "" ? var.repository : "gcr.io/${var.project_id}"
-}
-
-provider "ko" {
-  repo = local.repo
-}
-
-// Create a service account for the prober to run as.
-resource "google_service_account" "prober" {
-  project = var.project_id
-  # Service accounts can be 30 characters long, so truncate var.name to 23 chars.
-  account_id = "${substr(var.name, 0, 23)}-prober"
+  repo = var.repository != "" ? var.repository : "gcr.io/${var.project_id}/${var.name}"
 }
 
 // Build the prober into an image we can run on Cloud Run.
 resource "ko_image" "image" {
+  repo        = local.repo
   base_image  = var.base_image
   importpath  = var.importpath
   working_dir = var.working_dir
@@ -57,7 +47,7 @@ resource "google_cloud_run_service" "probers" {
 
   template {
     spec {
-      service_account_name = google_service_account.prober.email
+      service_account_name = var.service-account
       containers {
         image = ko_image.image.image_ref
 

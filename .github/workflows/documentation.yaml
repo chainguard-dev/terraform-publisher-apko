@@ -16,3 +16,7 @@ jobs:
           output-file: README.md
           output-method: inject
           fail-on-diff: "true"
+      - name: Dump README
+        if: failure()
+        run: |
+          cat README.md

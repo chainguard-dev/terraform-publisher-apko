@@ -18,12 +18,18 @@ variable "project_id" {
   description = "The project that will host the prober."
 }
 
+resource "google_service_account" "prober" {
+  project = var.project_id
+  account_id = "basic-example-prober"
+}
+
 module "prober" {
   source  = "chainguard-dev/prober/google"
   version = "v0.1.2"
 
-  name       = "basic-example"
-  project_id = var.project_id
+  name            = "basic-example"
+  project_id      = var.project_id
+  service-account = google_service_account.prober.email
 
   importpath  = "github.com/chainguard-dev/terraform-google-prober/examples/basic"
   working_dir = path.module

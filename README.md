@@ -125,7 +125,6 @@ No modules.
 | [google_dns_record_set.prober_dns](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_record_set) | resource |
 | [google_monitoring_uptime_check_config.global_uptime_check](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/monitoring_uptime_check_config) | resource |
 | [google_monitoring_uptime_check_config.regional_uptime_check](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/monitoring_uptime_check_config) | resource |
-| [google_service_account.prober](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [ko_image.image](https://registry.terraform.io/providers/ko-build/ko/latest/docs/resources/image) | resource |
 | [random_password.secret](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [google_iam_policy.noauth](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_policy) | data source |
@@ -143,6 +142,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name to prefix to created resources. | `any` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The project that will host the prober. | `string` | n/a | yes |
 | <a name="input_repository"></a> [repository](#input\_repository) | Container repository to publish images to. | `string` | `""` | no |
+| <a name="input_service-account"></a> [service-account](#input\_service-account) | The email address of the service account to run the service as. | `string` | n/a | yes |
 | <a name="input_working_dir"></a> [working\_dir](#input\_working\_dir) | The working directory that contains the importpath. | `string` | n/a | yes |
 
 ## Outputs

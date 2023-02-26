@@ -24,6 +24,11 @@ variable "repository" {
   description = "Container repository to publish images to."
 }
 
+variable "service-account" {
+  type        = string
+  description = "The email address of the service account to run the service as."
+}
+
 variable "importpath" {
   type        = string
   description = "The import path that contains the prober application."

@@ -30,12 +30,18 @@ resource "google_dns_managed_zone" "prober-zone" {
   description = "This is the DNS zone for the complex example prober."
 }
 
+resource "google_service_account" "prober" {
+  project = var.project_id
+  account_id = "complex-example-prober"
+}
+
 module "prober" {
   source  = "chainguard-dev/prober/google"
   version = "v0.1.2"
 
-  name       = "complex-example"
-  project_id = var.project_id
+  name            = "complex-example"
+  project_id      = var.project_id
+  service-account = google_service_account.prober.email
 
   importpath  = "github.com/chainguard-dev/terraform-google-prober/examples/complex"
   working_dir = path.module
