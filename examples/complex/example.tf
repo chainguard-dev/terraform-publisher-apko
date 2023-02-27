@@ -23,7 +23,7 @@ variable "domain" {
   description = "The domain to put the probers behind."
 }
 
-resource "google_dns_managed_zone" "prober-zone" {
+resource "google_dns_managed_zone" "prober_zone" {
   project     = var.project_id
   name        = "complex-example-prober"
   dns_name    = "${var.domain}."
@@ -37,7 +37,7 @@ resource "google_service_account" "prober" {
 
 module "prober" {
   source  = "chainguard-dev/prober/google"
-  version = "v0.1.2"
+  version = "v0.2.0"
 
   name            = "complex-example"
   project_id      = var.project_id
@@ -54,7 +54,7 @@ module "prober" {
     "us-west1",
   ]
   domain   = var.domain
-  dns_zone = google_dns_managed_zone.prober-zone.name
+  dns_zone = google_dns_managed_zone.prober_zone.name
 
   env = {
     "FOO" : "bar"

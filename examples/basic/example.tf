@@ -25,7 +25,7 @@ resource "google_service_account" "prober" {
 
 module "prober" {
   source  = "chainguard-dev/prober/google"
-  version = "v0.1.2"
+  version = "v0.2.0"
 
   name            = "basic-example"
   project_id      = var.project_id

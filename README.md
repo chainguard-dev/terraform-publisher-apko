@@ -86,7 +86,7 @@ This can be done by specifying the following additional configuration:
 
   # The Google Cloud DNS Zone to use for directing prober hostnames to the GCLB
   # IP address.
-  dns_zone = google_dns_managed_zone.prober-zone.name
+  dns_zone = google_dns_managed_zone.prober_zone.name
 ```
 
 > See our [complex example](./examples/complex/).
@@ -142,7 +142,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name to prefix to created resources. | `any` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The project that will host the prober. | `string` | n/a | yes |
 | <a name="input_repository"></a> [repository](#input\_repository) | Container repository to publish images to. | `string` | `""` | no |
-| <a name="input_service-account"></a> [service-account](#input\_service-account) | The email address of the service account to run the service as. | `string` | n/a | yes |
+| <a name="input_service_account"></a> [service\_account](#input\_service\_account) | The email address of the service account to run the service as. | `string` | n/a | yes |
 | <a name="input_working_dir"></a> [working\_dir](#input\_working\_dir) | The working directory that contains the importpath. | `string` | n/a | yes |
 
 ## Outputs

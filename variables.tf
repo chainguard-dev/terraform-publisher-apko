@@ -24,7 +24,7 @@ variable "repository" {
   description = "Container repository to publish images to."
 }
 
-variable "service-account" {
+variable "service_account" {
   type        = string
   description = "The email address of the service account to run the service as."
 }

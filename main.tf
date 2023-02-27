@@ -47,7 +47,7 @@ resource "google_cloud_run_service" "probers" {
 
   template {
     spec {
-      service_account_name = var.service-account
+      service_account_name = var.service_account
       containers {
         image = ko_image.image.image_ref
 
