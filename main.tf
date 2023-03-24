@@ -19,7 +19,7 @@ locals {
 }
 
 // Build the prober into an image we can run on Cloud Run.
-resource "ko_image" "image" {
+resource "ko_build" "image" {
   repo        = local.repo
   base_image  = var.base_image
   importpath  = var.importpath
@@ -49,7 +49,7 @@ resource "google_cloud_run_service" "probers" {
     spec {
       service_account_name = var.service_account
       containers {
-        image = ko_image.image.image_ref
+        image = ko_build.image.image_ref
 
         // This is a shared secret with the uptime check, which must be
         // passed in an Authorization header for the probe to do work.
