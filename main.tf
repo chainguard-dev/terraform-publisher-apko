@@ -5,6 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 terraform {
   required_providers {
+    cosign = {
+      source = "chainguard-dev/cosign"
+    }
     ko = {
       source = "ko-build/ko"
     }
@@ -18,12 +21,45 @@ locals {
   repo = var.repository != "" ? var.repository : "gcr.io/${var.project_id}/${var.name}"
 }
 
+data "cosign_verify" "base-image" {
+  image = "cgr.dev/chainguard/static:latest-glibc"
+
+  policy = jsonencode({
+    apiVersion = "policy.sigstore.dev/v1beta1"
+    kind       = "ClusterImagePolicy"
+    metadata = {
+      name = "chainguard-images-are-signed"
+    }
+    spec = {
+      images = [{
+        glob = "cgr.dev/**"
+      }]
+      authorities = [{
+        keyless = {
+          url = "https://fulcio.sigstore.dev"
+          identities = [{
+            issuer  = "https://token.actions.githubusercontent.com"
+            subject = "https://github.com/chainguard-images/images/.github/workflows/release.yaml@refs/heads/main"
+          }]
+        }
+        ctlog = {
+          url = "https://rekor.sigstore.dev"
+        }
+      }]
+    }
+  })
+}
+
 // Build the prober into an image we can run on Cloud Run.
 resource "ko_build" "image" {
   repo        = local.repo
-  base_image  = var.base_image
+  base_image  = data.cosign_verify.base-image.verified_ref
   importpath  = var.importpath
   working_dir = var.working_dir
+}
+
+resource "cosign_sign" "image" {
+  image = ko_build.image.image_ref
 }
 
 // Create a shared secret to have the uptime check pass to the
@@ -49,7 +85,7 @@ resource "google_cloud_run_service" "probers" {
     spec {
       service_account_name = var.service_account
       containers {
-        image = ko_build.image.image_ref
+        image = cosign_sign.image.signed_ref
 
         // This is a shared secret with the uptime check, which must be
         // passed in an Authorization header for the probe to do work.
