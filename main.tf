@@ -23,11 +23,14 @@ resource "cosign_sign" "signature" {
   image = apko_build.this.image_ref
 }
 
-resource "cosign_attest" "sboms" {
-  for_each = apko_build.this.sboms
+# data "apko_config" "this" {
+#   config = var.config
+# }
 
-  image          = each.key
-  predicate_type = "https://spdx.dev/Document"
-  predicate      = each.value
-}
+# resource "cosign_attest" "sboms" {
+#   for_each = toset(concat(data.apko_config.this.data.archs, ["index"]))
 
+#   image          = apko_build.this.sboms[each.key].digest
+#   predicate_type = "https://spdx.dev/Document"
+#   predicate      = apko_build.this.sboms[each.key].sbom
+# }
