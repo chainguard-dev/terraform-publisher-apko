@@ -43,7 +43,7 @@ data "cosign_verify" "image-signature" {
           url = "https://fulcio.sigstore.dev"
           identities = [{
             issuer  = "https://token.actions.githubusercontent.com"
-            subject = "https://github.com/mattmoor/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
+            subject = "https://github.com/chainguard-dev/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
           }]
         }
         ctlog = {
