@@ -48,4 +48,7 @@ resource "cosign_attest" "apko-configuration" {
   image          = apko_build.this.sboms[each.key].digest
   predicate_type = "https://apko.dev/image-configuration"
   predicate      = jsonencode(data.apko_config.this.config)
+
+  # Avoid racing with SBOMS to publish attestations.
+  depends_on = [cosign_attest.sboms]
 }
