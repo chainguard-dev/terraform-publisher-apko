@@ -18,6 +18,13 @@ variable "target_repository" {
   description = "The docker repo into which the image and attestations should be published."
 }
 
+provider "apko" {
+  repositories = ["https://packages.wolfi.dev/os"]
+  keyring      = ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
+  archs        = ["x86_64", "aarch64"]
+  packages     = ["wolfi-baselayout"]
+}
+
 module "image" {
   source  = "../.."
 
@@ -26,7 +33,8 @@ module "image" {
 }
 
 data "cosign_verify" "image-signature" {
-  image = module.image.image_ref
+  for_each = module.image.archs
+  image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
     apiVersion = "policy.sigstore.dev/v1beta1"
@@ -35,9 +43,7 @@ data "cosign_verify" "image-signature" {
       name = "signed"
     }
     spec = {
-      images = [{
-        glob = module.image.image_ref
-      }]
+      images = [{ glob = "**" }]
       authorities = [{
         keyless = {
           url = "https://fulcio.sigstore.dev"
@@ -54,4 +60,45 @@ data "cosign_verify" "image-signature" {
   })
 }
 
-// TODO(mattmoor): Check the SBOM attestation as well.
+data "cosign_verify" "index-sbom" {
+  for_each = module.image.archs
+  image    = module.image.arch_to_image[each.key]
+
+  policy = jsonencode({
+    apiVersion = "policy.sigstore.dev/v1beta1"
+    kind       = "ClusterImagePolicy"
+    metadata = {
+      name = "sbom-attestation"
+    }
+    spec = {
+      images = [{ glob = "**" }]
+      authorities = [{
+        keyless = {
+          url = "https://fulcio.sigstore.dev"
+          identities = [{
+            issuer  = "https://token.actions.githubusercontent.com"
+            subject = "https://github.com/chainguard-dev/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
+          }]
+        }
+        ctlog = {
+          url = "https://rekor.sigstore.dev"
+        }
+        attestations = [
+          {
+            name = "spdx-att"
+            predicateType = "https://spdx.dev/Document"
+            policy = {
+              type = "cue"
+              # TODO(mattmoor): Add more meaningful SBOM checks.
+              data = "predicateType: \"https://spdx.dev/Document\""
+            }
+          },
+        ]
+      }]
+    }
+  })
+}
+
+output "image_ref" {
+  value = module.image.image_ref
+}

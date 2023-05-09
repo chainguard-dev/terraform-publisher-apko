@@ -23,14 +23,16 @@ resource "apko_build" "this" {
   config = data.apko_config.this.config
 }
 
+# Create SBOM attestations for each architecture.
+resource "cosign_attest" "sboms" {
+  for_each = toset(concat(data.apko_config.this.config.archs,
+  length(data.apko_config.this.config.archs) > 1 ? ["index"] : []))
+
+  image          = apko_build.this.sboms[each.key].digest
+  predicate_type = apko_build.this.sboms[each.key].predicate_type
+  predicate      = apko_build.this.sboms[each.key].predicate
+}
+
 resource "cosign_sign" "signature" {
   image = apko_build.this.image_ref
 }
-
-# resource "cosign_attest" "sboms" {
-#   for_each = toset(concat(data.apko_config.this.data.archs, ["index"]))
-
-#   image          = apko_build.this.sboms[each.key].digest
-#   predicate_type = "https://spdx.dev/Document"
-#   predicate      = apko_build.this.sboms[each.key].sbom
-# }

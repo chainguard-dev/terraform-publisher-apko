@@ -30,6 +30,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [apko_build.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/resources/build) | resource |
+| [cosign_attest.sboms](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_sign.signature](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/sign) | resource |
 | [apko_config.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/data-sources/config) | data source |
 
@@ -44,5 +45,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_arch_to_image"></a> [arch\_to\_image](#output\_arch\_to\_image) | n/a |
+| <a name="output_archs"></a> [archs](#output\_archs) | n/a |
+| <a name="output_config"></a> [config](#output\_config) | n/a |
 | <a name="output_image_ref"></a> [image\_ref](#output\_image\_ref) | n/a |
 <!-- END_TF_DOCS -->
