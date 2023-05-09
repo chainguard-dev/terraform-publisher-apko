@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 output "image_ref" {
   value = cosign_sign.signature.signed_ref
 
-  depends_on = [cosign_attest.sboms]
+  depends_on = [cosign_attest.sboms, cosign_attest.apko-configuration]
 }
 
 output "config" {
@@ -14,7 +14,7 @@ output "config" {
 }
 
 output "archs" {
-  value = toset(concat(data.apko_config.this.config.archs, length(data.apko_config.this.config.archs) > 1 ? ["index"] : []))
+  value = local.archs
 }
 
 output "arch_to_image" {
@@ -22,5 +22,5 @@ output "arch_to_image" {
     for k, v in apko_build.this.sboms : k => v.digest
   }
 
-  depends_on = [cosign_attest.sboms]
+  depends_on = [cosign_attest.sboms, cosign_attest.apko-configuration]
 }

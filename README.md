@@ -8,7 +8,6 @@ Currently the following supply chain metadata is surfaced:
 1. The images are signed by the workload,
 2. The SPDX SBOM are attestated by the workload.
 
-
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -30,6 +29,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [apko_build.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/resources/build) | resource |
+| [cosign_attest.apko-configuration](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_attest.sboms](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_sign.signature](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/sign) | resource |
 | [apko_config.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/data-sources/config) | data source |
