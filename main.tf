@@ -14,18 +14,18 @@ terraform {
   }
 }
 
+data "apko_config" "this" {
+  config_contents = var.config
+}
+
 resource "apko_build" "this" {
   repo   = var.target_repository
-  config = var.config
+  config = data.apko_config.this.config
 }
 
 resource "cosign_sign" "signature" {
   image = apko_build.this.image_ref
 }
-
-# data "apko_config" "this" {
-#   config = var.config
-# }
 
 # resource "cosign_attest" "sboms" {
 #   for_each = toset(concat(data.apko_config.this.data.archs, ["index"]))
