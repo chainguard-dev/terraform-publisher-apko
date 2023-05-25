@@ -16,6 +16,7 @@ terraform {
 
 data "apko_config" "this" {
   config_contents = var.config
+  extra_packages  = var.extra_packages
 }
 
 resource "apko_build" "this" {
