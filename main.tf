@@ -53,3 +53,40 @@ resource "cosign_attest" "apko-configuration" {
   # Avoid racing with SBOMS to publish attestations.
   depends_on = [cosign_attest.sboms]
 }
+
+# Create attestations for each architecture holding the SLSA
+# provenance of the build.
+resource "cosign_attest" "slsa-provenance" {
+  for_each = local.archs
+
+  image          = apko_build.this.sboms[each.key].digest
+  predicate_type = "https://github.com/chainguard-dev/terraform-publisher-apko"
+  predicate = jsonencode({
+    buildDefinition = {
+      buildType = "https://apko.dev/slsa-build-type@v1"
+      # TODO(mattmoor): consider putting variables into `externalParameters`?
+      # TODO(mattmoor): how do we fit into the shape of `resolvedDependencies`?
+
+      # Use internal parameters to document the package resolution.
+      internalParameters = {
+        for k in data.apko_config.this.config.contents.packages : split("=", k)[0] => split("=", k)[1]
+      }
+
+      # TODO(mattmoor): Use an extension to encode the fully resolved apko configuration.
+    }
+    runDetails = {
+      builder = {
+        id = "https://github.com/chainguard-dev/terraform-provider-apko"
+        version = {
+          # TODO(mattmoor): How do we get the version of tf-apko?
+        }
+      }
+      metadata = {
+        invocationId = apko_build.this.id
+      }
+    }
+  })
+
+  # Avoid racing with ako-configuration to publish attestations.
+  depends_on = [cosign_attest.apko-configuration]
+}
