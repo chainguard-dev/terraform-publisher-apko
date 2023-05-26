@@ -30,6 +30,9 @@ module "image" {
 
   target_repository = var.target_repository
   config = file("${path.module}/static.yaml")
+
+  # Simulate a "dev" variant
+  extra_packages = ["busybox"]
 }
 
 data "cosign_verify" "image-signatures" {
@@ -137,7 +140,6 @@ data "cosign_verify" "config-attestations" {
     }
   })
 }
-
 
 output "image_ref" {
   value = module.image.image_ref
