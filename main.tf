@@ -60,7 +60,7 @@ resource "cosign_attest" "slsa-provenance" {
   for_each = local.archs
 
   image          = apko_build.this.sboms[each.key].digest
-  predicate_type = "https://github.com/chainguard-dev/terraform-publisher-apko"
+  predicate_type = "https://slsa.dev/provenance/v1"
   predicate = jsonencode({
     buildDefinition = {
       buildType = "https://apko.dev/slsa-build-type@v1"
