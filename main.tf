@@ -38,7 +38,10 @@ resource "cosign_attest" "sboms" {
 
   image          = apko_build.this.sboms[each.key].digest
   predicate_type = apko_build.this.sboms[each.key].predicate_type
-  predicate      = apko_build.this.sboms[each.key].predicate
+  predicate_file {
+    path   = apko_build.this.sboms[each.key].predicate_path
+    sha256 = apko_build.this.sboms[each.key].predicate_sha256
+  }
 }
 
 # Create attestations for each architecture holding the "locked"
