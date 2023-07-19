@@ -16,3 +16,9 @@ variable "extra_packages" {
 variable "config" {
   description = "The apko configuration file to build and publish."
 }
+
+variable "default_annotations" {
+  type        = map(string)
+  default     = {}
+  description = "Default annotations to apply to this image."
+}

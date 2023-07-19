@@ -15,8 +15,9 @@ terraform {
 }
 
 data "apko_config" "this" {
-  config_contents = var.config
-  extra_packages  = var.extra_packages
+  config_contents     = var.config
+  extra_packages      = var.extra_packages
+  default_annotations = var.default_annotations
 }
 
 resource "apko_build" "this" {
@@ -90,6 +91,6 @@ resource "cosign_attest" "slsa-provenance" {
     }
   })
 
-  # Avoid racing with ako-configuration to publish attestations.
+  # Avoid racing with apko-configuration to publish attestations.
   depends_on = [cosign_attest.apko-configuration]
 }

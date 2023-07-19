@@ -26,13 +26,17 @@ provider "apko" {
 }
 
 module "image" {
-  source  = "../.."
+  source = "../.."
 
   target_repository = var.target_repository
-  config = file("${path.module}/static.yaml")
+  config            = file("${path.module}/static.yaml")
 
   # Simulate a "dev" variant
   extra_packages = ["busybox"]
+
+  default_annotations = {
+    "org.opencontainers.image.source" = "https://github.com/chainguard-dev/terraform-publisher-apko/examples/${basename(path.cwd)}"
+  }
 }
 
 data "cosign_verify" "image-signatures" {
@@ -88,7 +92,7 @@ data "cosign_verify" "sbom-attestations" {
         }
         attestations = [
           {
-            name = "spdx-att"
+            name          = "spdx-att"
             predicateType = "https://spdx.dev/Document"
             policy = {
               type = "cue"
@@ -127,7 +131,7 @@ data "cosign_verify" "config-attestations" {
         }
         attestations = [
           {
-            name = "config-att"
+            name          = "config-att"
             predicateType = "https://apko.dev/image-configuration"
             policy = {
               type = "cue"
