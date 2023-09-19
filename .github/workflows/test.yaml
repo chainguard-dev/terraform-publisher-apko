@@ -40,5 +40,5 @@ jobs:
     - working-directory: ./examples/${{ matrix.example }}
       run: |
         export TF_VAR_target_repository=localhost:5000/${{ matrix.example }}
-        terraform init
+        terraform init -upgrade
         terraform apply -auto-approve
