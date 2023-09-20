@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 output "image_ref" {
   value = cosign_sign.signature.signed_ref
 
-  depends_on = [cosign_attest.slsa-provenance]
+  depends_on = [cosign_attest.this]
 }
 
 output "config" {
@@ -22,5 +22,5 @@ output "arch_to_image" {
     for k, v in apko_build.this.sboms : k => v.digest
   }
 
-  depends_on = [cosign_attest.slsa-provenance]
+  depends_on = [cosign_attest.this]
 }
