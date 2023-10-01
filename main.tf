@@ -30,7 +30,7 @@ resource "cosign_sign" "signature" {
 }
 
 locals {
-  archs = toset(concat(data.apko_config.this.config.archs, length(data.apko_config.this.config.archs) > 1 ? ["index"] : []))
+  archs = toset(concat(["index"], data.apko_config.this.config.archs))
 }
 
 resource "cosign_attest" "this" {
