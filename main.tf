@@ -38,6 +38,9 @@ resource "cosign_attest" "this" {
 
   image = apko_build.this.sboms[each.key].digest
 
+  # Do not re-attest things that have not changed.
+  conflict = "SKIPSAME"
+
   # Create SBOM attestations for each architecture.
   predicates {
     type = apko_build.this.sboms[each.key].predicate_type
