@@ -27,6 +27,9 @@ resource "apko_build" "this" {
 
 resource "cosign_sign" "signature" {
   image = apko_build.this.image_ref
+
+  # Only keep the latest signature. We use these to ensure we regularly rebuild.
+  conflict = "REPLACE"
 }
 
 locals {
