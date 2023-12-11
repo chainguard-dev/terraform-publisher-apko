@@ -25,6 +25,7 @@ resource "apko_build" "this" {
   config = data.apko_config.this.config
 }
 
+# NOTE: The Diff API vulnerability scan generator depends on signature push events to happen on daily basis for every rebuilt image.
 resource "cosign_sign" "signature" {
   image = apko_build.this.image_ref
 
