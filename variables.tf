@@ -22,3 +22,13 @@ variable "default_annotations" {
   default     = {}
   description = "Default annotations to apply to this image."
 }
+
+variable "check_sbom" {
+  default     = true
+  description = "Whether to run the NTIA conformance checker on the SBOMs we are attesting."
+}
+
+variable "sbom_checker" {
+  default     = "cgr.dev/chainguard/ntia-conformance-checker:latest"
+  description = "The NTIA conformance checker image to use to validate SBOMs."
+}
