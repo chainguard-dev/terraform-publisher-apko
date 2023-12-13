@@ -5,12 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 terraform {
   required_providers {
-    cosign = {
-      source = "chainguard-dev/cosign"
-    }
-    apko = {
-      source = "chainguard-dev/apko"
-    }
+    apko   = { source = "chainguard-dev/apko" }
+    cosign = { source = "chainguard-dev/cosign" }
+    oci    = { source = "chainguard-dev/oci" }
   }
 }
 
@@ -37,8 +34,19 @@ locals {
   archs = toset(concat(["index"], data.apko_config.this.config.archs))
 }
 
+data "oci_exec_test" "check-sbom" {
+  for_each = var.check_sbom ? local.archs : []
+  digest   = apko_build.this.sboms[each.key].digest
+
+  # Run the supplied NTIA checker over the SBOM files mounted into the checker image in a readonly mode.
+  # We run as root to avoid permission issues reading the SBOM as the default nonroot user.
+  script = "docker run --rm --user 0 -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro ${var.sbom_checker} -v --file /sbom.json"
+}
+
 resource "cosign_attest" "this" {
   for_each = local.archs
+
+  depends_on = [data.oci_exec_test.check-sbom]
 
   image = apko_build.this.sboms[each.key].digest
 

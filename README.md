@@ -19,6 +19,7 @@ No requirements.
 |------|---------|
 | <a name="provider_apko"></a> [apko](#provider\_apko) | n/a |
 | <a name="provider_cosign"></a> [cosign](#provider\_cosign) | n/a |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
 
 ## Modules
 
@@ -32,14 +33,17 @@ No modules.
 | [cosign_attest.this](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_sign.signature](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/sign) | resource |
 | [apko_config.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/data-sources/config) | data source |
+| [oci_exec_test.check-sbom](https://registry.terraform.io/providers/chainguard-dev/oci/latest/docs/data-sources/exec_test) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_check_sbom"></a> [check\_sbom](#input\_check\_sbom) | Whether to run the NTIA conformance checker on the SBOMs we are attesting. | `bool` | `true` | no |
 | <a name="input_config"></a> [config](#input\_config) | The apko configuration file to build and publish. | `any` | n/a | yes |
 | <a name="input_default_annotations"></a> [default\_annotations](#input\_default\_annotations) | Default annotations to apply to this image. | `map(string)` | `{}` | no |
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
+| <a name="input_sbom_checker"></a> [sbom\_checker](#input\_sbom\_checker) | The NTIA conformance checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/ntia-conformance-checker:latest"` | no |
 | <a name="input_target_repository"></a> [target\_repository](#input\_target\_repository) | The docker repo into which the image and attestations should be published. | `any` | n/a | yes |
 
 ## Outputs
