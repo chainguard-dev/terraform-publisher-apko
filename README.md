@@ -44,6 +44,7 @@ No modules.
 | <a name="input_default_annotations"></a> [default\_annotations](#input\_default\_annotations) | Default annotations to apply to this image. | `map(string)` | `{}` | no |
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
 | <a name="input_sbom_checker"></a> [sbom\_checker](#input\_sbom\_checker) | The NTIA conformance checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/ntia-conformance-checker:latest"` | no |
+| <a name="input_skip_attest"></a> [skip\_attest](#input\_skip\_attest) | If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor. | `bool` | `false` | no |
 | <a name="input_target_repository"></a> [target\_repository](#input\_target\_repository) | The docker repo into which the image and attestations should be published. | `any` | n/a | yes |
 
 ## Outputs

@@ -32,3 +32,8 @@ variable "sbom_checker" {
   default     = "cgr.dev/chainguard/ntia-conformance-checker:latest"
   description = "The NTIA conformance checker image to use to validate SBOMs."
 }
+
+variable "skip_attest" {
+  description = "If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor."
+  default     = false
+}

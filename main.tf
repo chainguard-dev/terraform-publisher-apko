@@ -44,7 +44,7 @@ data "oci_exec_test" "check-sbom" {
 }
 
 resource "cosign_attest" "this" {
-  for_each = local.archs
+  for_each = var.skip_attest ? [] : local.archs
 
   depends_on = [data.oci_exec_test.check-sbom]
 
