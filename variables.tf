@@ -33,6 +33,11 @@ variable "sbom_checker" {
   description = "The NTIA conformance checker image to use to validate SBOMs."
 }
 
+variable "spdx_image" {
+  default     = "cgr.dev/chainguard/wolfi-base:latest"
+  description = "The SPDX checker image to use to validate SBOMs."
+}
+
 variable "skip_attest" {
   description = "If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor."
   default     = false
