@@ -42,7 +42,7 @@ data "oci_exec_test" "check-sbom-ntia" {
 }
 
 data "oci_exec_test" "check-sbom-spdx" {
-  for_each = var.check_sbom != "" ? local.archs : []
+  for_each = var.check_sbom ? local.archs : []
   digest   = apko_build.this.sboms[each.key].digest
 
   # Run the supplied SPDX checker over the SBOM file mounted into the image in a readonly mode.

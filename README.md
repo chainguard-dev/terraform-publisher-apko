@@ -41,13 +41,13 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_check_sbom"></a> [check\_sbom](#input\_check\_sbom) | Whether to run the NTIA conformance checker on the SBOMs we are attesting. | `bool` | `true` | no |
-| <a name="input_config"></a> [config](#input\_config) | The apko configuration file to build and publish. | `any` | n/a | yes |
+| <a name="input_config"></a> [config](#input\_config) | The apko configuration file contents to build and publish. | `string` | n/a | yes |
 | <a name="input_default_annotations"></a> [default\_annotations](#input\_default\_annotations) | Default annotations to apply to this image. | `map(string)` | `{}` | no |
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
 | <a name="input_sbom_checker"></a> [sbom\_checker](#input\_sbom\_checker) | The NTIA conformance checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/ntia-conformance-checker:latest"` | no |
 | <a name="input_skip_attest"></a> [skip\_attest](#input\_skip\_attest) | If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor. | `bool` | `false` | no |
 | <a name="input_spdx_image"></a> [spdx\_image](#input\_spdx\_image) | The SPDX checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/wolfi-base:latest"` | no |
-| <a name="input_target_repository"></a> [target\_repository](#input\_target\_repository) | The docker repo into which the image and attestations should be published. | `any` | n/a | yes |
+| <a name="input_target_repository"></a> [target\_repository](#input\_target\_repository) | The docker repo into which the image and attestations should be published. | `string` | n/a | yes |
 
 ## Outputs
 

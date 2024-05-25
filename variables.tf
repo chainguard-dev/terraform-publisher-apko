@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 variable "target_repository" {
+  type        = string
   description = "The docker repo into which the image and attestations should be published."
 }
 
@@ -14,7 +15,8 @@ variable "extra_packages" {
 }
 
 variable "config" {
-  description = "The apko configuration file to build and publish."
+  type        = string
+  description = "The apko configuration file contents to build and publish."
 }
 
 variable "default_annotations" {
@@ -24,21 +26,25 @@ variable "default_annotations" {
 }
 
 variable "check_sbom" {
+  type        = bool
   default     = true
   description = "Whether to run the NTIA conformance checker on the SBOMs we are attesting."
 }
 
 variable "sbom_checker" {
+  type        = string
   default     = "cgr.dev/chainguard/ntia-conformance-checker:latest"
   description = "The NTIA conformance checker image to use to validate SBOMs."
 }
 
 variable "spdx_image" {
+  type        = string
   default     = "cgr.dev/chainguard/wolfi-base:latest"
   description = "The SPDX checker image to use to validate SBOMs."
 }
 
 variable "skip_attest" {
+  type        = bool
   description = "If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor."
   default     = false
 }
