@@ -38,7 +38,11 @@ data "oci_exec_test" "check-sbom-ntia" {
 
   # Run the supplied NTIA checker over the SBOM file mounted into the checker image in a readonly mode.
   # We run as root to avoid permission issues reading the SBOM as the default nonroot user.
-  script = "docker run --rm --user 0 -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro ${var.sbom_checker} -v --file /sbom.json"
+  script = <<EOF
+  docker run --rm --user 0 \
+      -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro \
+      ${var.sbom_checker} -v --file /sbom.json
+  EOF
 }
 
 data "oci_exec_test" "check-sbom-spdx" {

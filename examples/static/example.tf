@@ -25,7 +25,7 @@ variable "archs" {
 }
 
 variable "check_sbom" {
-  description = "Whether to run the NTIA conformance checker on the SBOMs we are attesting."
+  description = "Whether to run the NTIA conformance checker and SPDX validity test on the SBOMs we are attesting."
   type        = bool
   default     = true
 }
