@@ -1,6 +1,8 @@
 name: Tests
 on:
-  pull_request_target:
+  pull_request_target: # To test cosign signing.
+    branches: ['main']
+  pull_request:
     branches: ['main']
   push:
     branches: ['main']
@@ -9,12 +11,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        example:
-        - 'static'
-
     permissions:
       contents: read
       id-token: write
@@ -26,7 +22,7 @@ jobs:
 
     - uses: actions/setup-go@v5
       with:
-        go-version: '1.18'
+        go-version: '1.22'
 
     - uses: chainguard-dev/actions/setup-registry@main
       with:
@@ -34,11 +30,24 @@ jobs:
 
     - uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: '1.3.*'
+        terraform_version: '1.8.*'
         terraform_wrapper: false
 
-    - working-directory: ./examples/${{ matrix.example }}
+    - working-directory: ./examples/static
+      env:
+        TF_VAR_target_repository: localhost:5000/static
+        TF_VAR_verify: ${{github.event_name == 'pull_request_target'}}
       run: |
-        export TF_VAR_target_repository=localhost:5000/${{ matrix.example }}
+        terraform init -upgrade
+        terraform apply -auto-approve
+
+    # Test with archs and check_sbom=false
+    - working-directory: ./examples/static
+      env:
+        TF_VAR_target_repository: localhost:5000/static
+        TF_VAR_archs: '["x86_64"]'
+        TF_VAR_check_sbom: 'false'
+        TF_VAR_verify: ${{github.event_name == 'pull_request_target'}}
+      run: |
         terraform init -upgrade
         terraform apply -auto-approve

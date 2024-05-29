@@ -18,10 +18,28 @@ variable "target_repository" {
   description = "The docker repo into which the image and attestations should be published."
 }
 
+variable "archs" {
+  description = "The architectures to build for."
+  type        = list(string)
+  default     = ["x86_64", "aarch64"]
+}
+
+variable "check_sbom" {
+  description = "Whether to run the NTIA conformance checker and SPDX validity test on the SBOMs we are attesting."
+  type        = bool
+  default     = true
+}
+
+variable "verify" {
+  description = "Whether to verify image signatures and attestations."
+  type        = bool
+  default     = true
+}
+
 provider "apko" {
   extra_repositories = ["https://packages.wolfi.dev/os"]
   extra_keyring      = ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
-  default_archs      = ["x86_64", "aarch64"]
+  default_archs      = var.archs
   extra_packages     = ["wolfi-baselayout"]
 }
 
@@ -30,6 +48,8 @@ module "image" {
 
   target_repository = var.target_repository
   config            = file("${path.module}/static.yaml")
+
+  check_sbom = var.check_sbom
 
   # Simulate a "dev" variant
   extra_packages = ["busybox"]
@@ -40,7 +60,7 @@ module "image" {
 }
 
 data "cosign_verify" "image-signatures" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
@@ -68,7 +88,7 @@ data "cosign_verify" "image-signatures" {
 }
 
 data "cosign_verify" "sbom-attestations" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
@@ -107,7 +127,7 @@ data "cosign_verify" "sbom-attestations" {
 }
 
 data "cosign_verify" "config-attestations" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
