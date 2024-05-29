@@ -30,6 +30,12 @@ variable "check_sbom" {
   default     = true
 }
 
+variable "verify" {
+  description = "Whether to verify image signatures and attestations."
+  type        = bool
+  default     = true
+}
+
 provider "apko" {
   extra_repositories = ["https://packages.wolfi.dev/os"]
   extra_keyring      = ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
@@ -54,7 +60,7 @@ module "image" {
 }
 
 data "cosign_verify" "image-signatures" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
@@ -82,7 +88,7 @@ data "cosign_verify" "image-signatures" {
 }
 
 data "cosign_verify" "sbom-attestations" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
@@ -121,7 +127,7 @@ data "cosign_verify" "sbom-attestations" {
 }
 
 data "cosign_verify" "config-attestations" {
-  for_each = module.image.archs
+  for_each = var.verify ? module.image.archs : []
   image    = module.image.arch_to_image[each.key]
 
   policy = jsonencode({
