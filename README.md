@@ -32,9 +32,9 @@ No modules.
 | [apko_build.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/resources/build) | resource |
 | [cosign_attest.this](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_sign.signature](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/sign) | resource |
+| [null_resource.check-sbom-ntia](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.check-sbom-spdx](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [apko_config.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/data-sources/config) | data source |
-| [oci_exec_test.check-sbom-ntia](https://registry.terraform.io/providers/chainguard-dev/oci/latest/docs/data-sources/exec_test) | data source |
-| [oci_exec_test.check-sbom-spdx](https://registry.terraform.io/providers/chainguard-dev/oci/latest/docs/data-sources/exec_test) | data source |
 
 ## Inputs
 
