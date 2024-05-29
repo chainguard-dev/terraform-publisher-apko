@@ -19,7 +19,7 @@ No requirements.
 |------|---------|
 | <a name="provider_apko"></a> [apko](#provider\_apko) | n/a |
 | <a name="provider_cosign"></a> [cosign](#provider\_cosign) | n/a |
-| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
