@@ -63,9 +63,8 @@ resource "null_resource" "check-sbom-spdx" {
     command = <<EOF
   docker run --rm --user 0 \
       -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro \
-      --entrypoint sh \
       ${var.spdx_image} \
-      -c "apk add spdx-tools-java && tools-java Verify /sbom.json"
+      Verify /sbom.json
   EOF
   }
 }
