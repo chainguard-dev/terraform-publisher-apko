@@ -46,7 +46,7 @@ No modules.
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
 | <a name="input_sbom_checker"></a> [sbom\_checker](#input\_sbom\_checker) | The NTIA conformance checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/ntia-conformance-checker:latest"` | no |
 | <a name="input_skip_attest"></a> [skip\_attest](#input\_skip\_attest) | If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor. | `bool` | `false` | no |
-| <a name="input_spdx_image"></a> [spdx\_image](#input\_spdx\_image) | The SPDX checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/wolfi-base:latest"` | no |
+| <a name="input_spdx_image"></a> [spdx\_image](#input\_spdx\_image) | The SPDX checker image to use to validate SBOMs. | `string` | `"cgr.dev/chainguard/spdx-tools:latest"` | no |
 | <a name="input_target_repository"></a> [target\_repository](#input\_target\_repository) | The docker repo into which the image and attestations should be published. | `string` | n/a | yes |
 
 ## Outputs
