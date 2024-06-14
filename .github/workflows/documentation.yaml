@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Render terraform docs and fail on diff
         uses: terraform-docs/gh-actions@e47bfa196e79fa50987ef391be236d9d97b0c786 # v1.2.0
         with:
