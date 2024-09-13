@@ -17,8 +17,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_apko"></a> [apko](#provider\_apko) | 0.13.1 |
-| <a name="provider_cosign"></a> [cosign](#provider\_cosign) | 0.0.17 |
+| <a name="provider_apko"></a> [apko](#provider\_apko) | n/a |
+| <a name="provider_cosign"></a> [cosign](#provider\_cosign) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
