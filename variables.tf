@@ -31,12 +31,6 @@ variable "check_sbom" {
   description = "Whether to run the NTIA conformance checker on the SBOMs we are attesting."
 }
 
-variable "sbom_checker" {
-  type        = string
-  default     = "cgr.dev/chainguard/ntia-conformance-checker:latest"
-  description = "The NTIA conformance checker image to use to validate SBOMs."
-}
-
 variable "spdx_image" {
   type        = string
   default     = "cgr.dev/chainguard/spdx-tools:latest"

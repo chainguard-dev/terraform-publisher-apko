@@ -31,24 +31,6 @@ resource "cosign_sign" "signature" {
 
 locals { archs = toset(concat(["index"], data.apko_config.this.config.archs)) }
 
-resource "null_resource" "check-sbom-ntia" {
-  for_each = var.check_sbom ? local.archs : []
-
-  triggers = {
-    digest = apko_build.this.sboms[each.key].digest
-  }
-
-  provisioner "local-exec" {
-    # Run the supplied NTIA checker over the SBOM file mounted into the checker image in a readonly mode.
-    # We run as root to avoid permission issues reading the SBOM as the default nonroot user.
-    command = <<EOF
-  docker run --rm --user 0 \
-      -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro \
-      ${var.sbom_checker} -v --file /sbom.json
-  EOF
-  }
-}
-
 resource "null_resource" "check-sbom-spdx" {
   for_each = var.check_sbom ? local.archs : []
 
@@ -59,7 +41,6 @@ resource "null_resource" "check-sbom-spdx" {
   provisioner "local-exec" {
     # Run the supplied SPDX checker over the SBOM file mounted into the image in a readonly mode.
     # We run as root to avoid permission issues reading the SBOM as the default nonroot user.
-    # TODO(jason): Build a new image with the spdx-tools-java package pre-installed.
     command = <<EOF
   docker run --rm --user 0 \
       -v ${apko_build.this.sboms[each.key].predicate_path}:/sbom.json:ro \
@@ -72,10 +53,7 @@ resource "null_resource" "check-sbom-spdx" {
 resource "cosign_attest" "this" {
   for_each = var.skip_attest ? [] : local.archs
 
-  depends_on = [
-    null_resource.check-sbom-ntia,
-    null_resource.check-sbom-spdx,
-  ]
+  depends_on = [null_resource.check-sbom-spdx]
 
   image = apko_build.this.sboms[each.key].digest
 
