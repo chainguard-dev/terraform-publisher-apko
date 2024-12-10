@@ -33,7 +33,7 @@ variable "check_sbom" {
 
 variable "spdx_image" {
   type        = string
-  default     = "cgr.dev/chainguard/spdx-tools:latest"
+  default     = "ghcr.io/wolfi-dev/spdx-tools:latest"
   description = "The SPDX checker image to use to validate SBOMs."
 }
 

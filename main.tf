@@ -17,8 +17,9 @@ data "apko_config" "this" {
 }
 
 resource "apko_build" "this" {
-  repo   = var.target_repository
-  config = data.apko_config.this.config
+  repo    = var.target_repository
+  config  = data.apko_config.this.config
+  configs = data.apko_config.this.configs
 }
 
 # NOTE: The Diff API vulnerability scan generator depends on signature push events to happen on daily basis for every rebuilt image.
@@ -73,7 +74,7 @@ resource "cosign_attest" "this" {
   # configuration used to perform the build.
   predicates {
     type = "https://apko.dev/image-configuration"
-    json = jsonencode(data.apko_config.this.config)
+    json = jsonencode(data.apko_config.this.configs[each.key].config)
   }
 
   # Create attestations for each architecture holding the SLSA
@@ -88,7 +89,7 @@ resource "cosign_attest" "this" {
 
         # Use internal parameters to document the package resolution.
         internalParameters = {
-          for k in data.apko_config.this.config.contents.packages : split("=", k)[0] => split("=", k)[1]
+          for k in data.apko_config.this.configs[each.key].config.contents.packages : split("=", k)[0] => split("=", k)[1]
         }
 
         # TODO(mattmoor): Use an extension to encode the fully resolved apko configuration.
