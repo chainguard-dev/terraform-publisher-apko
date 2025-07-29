@@ -29,6 +29,13 @@ resource "apko_build" "this" {
   repo    = var.target_repository
   config  = data.apko_config.this.config
   configs = data.apko_config.this.configs
+
+  lifecycle {
+    postcondition {
+      condition     = length(self.image_ref) > 0
+      error_message = "apko_build failed to produce a valid image_ref"
+    }
+  }
 }
 
 # NOTE: The Diff API vulnerability scan generator depends on signature push events to happen on daily basis for every rebuilt image.
@@ -45,7 +52,7 @@ locals {
   # Provenance metadata variables - derived from apko config and build context
   main_package = try(split("/", var.target_repository)[length(split("/", var.target_repository)) - 1], "unknown")
   image_authors = "Chainguard Team https://www.chainguard.dev/"
-  image_base_digest = apko_build.this.image_ref
+  image_base_digest = try(apko_build.this.sboms["index"].digest, apko_build.this.image_ref)
   image_source = try(data.apko_config.this.config.annotations["org.opencontainers.image.source"], "https://github.com/chainguard-images/images")
   image_url = "https://images.chainguard.dev"
   image_vendor = "Chainguard"
