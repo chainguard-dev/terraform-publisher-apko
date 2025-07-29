@@ -24,3 +24,8 @@ output "arch_to_image" {
 
   depends_on = [cosign_attest.this]
 }
+
+output "apko_version" {
+  value       = provider::apko::version()
+  description = "The version of the apko provider used to build this image."
+}
