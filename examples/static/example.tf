@@ -168,3 +168,8 @@ data "cosign_verify" "config-attestations" {
 output "image_ref" {
   value = module.image.image_ref
 }
+
+output "apko_version" {
+  value       = provider::apko::version()
+  description = "The version of the apko provider used to build this image."
+}
