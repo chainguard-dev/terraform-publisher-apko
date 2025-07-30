@@ -11,13 +11,15 @@ Currently the following supply chain metadata is surfaced:
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_apko"></a> [apko](#requirement\_apko) | >= 0.29.10 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_apko"></a> [apko](#provider\_apko) | n/a |
+| <a name="provider_apko"></a> [apko](#provider\_apko) | >= 0.29.10 |
 | <a name="provider_cosign"></a> [cosign](#provider\_cosign) | n/a |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
@@ -51,6 +53,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_apko_version"></a> [apko\_version](#output\_apko\_version) | The version of the apko provider used to build this image. |
 | <a name="output_arch_to_image"></a> [arch\_to\_image](#output\_arch\_to\_image) | n/a |
 | <a name="output_archs"></a> [archs](#output\_archs) | n/a |
 | <a name="output_config"></a> [config](#output\_config) | n/a |

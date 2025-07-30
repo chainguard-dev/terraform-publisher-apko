@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 terraform {
   required_providers {
-    apko   = { source = "chainguard-dev/apko" }
+    apko   = { source = "chainguard-dev/apko", version = ">= 0.29.10" }
     cosign = { source = "chainguard-dev/cosign" }
   }
 }
@@ -187,7 +187,8 @@ resource "cosign_attest" "this" {
         builder = {
           id = "https://chainguard.dev/prod/builders/apko/v1"
           version = {
-            apko = local.apko_version
+            apko                    = provider::apko::version().apko_version
+            terraform-provider-apko = provider::apko::version().provider_version
           }
         }
         metadata = {
