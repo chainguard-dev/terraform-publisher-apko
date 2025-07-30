@@ -85,14 +85,17 @@ resource "cosign_attest" "this" {
       buildDefinition = {
         buildType = "https://apko.dev/slsa-build-type@v1"
         # TODO(mattmoor): consider putting variables into `externalParameters`?
-        # TODO(mattmoor): how do we fit into the shape of `resolvedDependencies`?
-
-        # Use internal parameters to document the package resolution.
-        internalParameters = {
+        externalParameters = {
           for k in data.apko_config.this.configs[each.key].config.contents.packages : split("=", k)[0] => split("=", k)[1]
         }
 
-        # TODO(mattmoor): Use an extension to encode the fully resolved apko configuration.
+        internalParameters = {
+          # cloud = {
+          #   instanceId = local.cloud_instance_id
+          #   region     = local.cloud_region
+          #   type       = local.cloud_type
+          # }
+        }
       }
       runDetails = {
         builder = {
@@ -104,6 +107,7 @@ resource "cosign_attest" "this" {
         }
         metadata = {
           invocationId = apko_build.this.id
+          startedOn    = plantimestamp()
         }
       }
     })
