@@ -30,7 +30,7 @@ resource "cosign_sign" "signature" {
   conflict = "REPLACE"
 }
 
-locals { archs = toset(concat(["index"], data.apko_config.this.config.archs)) }
+locals { archs = toset(concat(["index"], try(jsondecode(var.config).archs, []))) }
 
 resource "null_resource" "check-sbom-spdx" {
   for_each = var.check_sbom ? local.archs : []
