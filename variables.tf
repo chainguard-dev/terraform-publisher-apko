@@ -42,3 +42,9 @@ variable "skip_attest" {
   description = "If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor."
   default     = false
 }
+
+variable "archs" {
+  type        = list(string)
+  default     = ["amd64", "arm64"]
+  description = "The architectures to build for."
+}
