@@ -97,7 +97,7 @@ resource "cosign_attest" "this" {
           for pkg in data.apko_config.this.resolved_packages[each.key] : {
             name   = pkg.name
             uri    = pkg.url
-            digest = { apkv2 = pkg.apkv2 }
+            digest = { apkv2 = pkg.checksum }
           }
         ]
 
