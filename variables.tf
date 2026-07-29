@@ -42,3 +42,9 @@ variable "skip_attest" {
   description = "If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor."
   default     = false
 }
+
+variable "signature_format" {
+  type        = string
+  default     = null
+  description = "Signature format to use for signing. Valid values are 'legacy', 'bundle', or 'both'. Defaults to the provider setting."
+}
