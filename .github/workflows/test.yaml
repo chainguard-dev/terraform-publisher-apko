@@ -66,3 +66,14 @@ jobs:
       run: |
         terraform init -upgrade
         terraform apply -auto-approve
+
+    # Test dual signing (legacy + bundle) via signature_format=both
+    - working-directory: ./examples/static
+      env:
+        TF_VAR_target_repository: localhost:5000/static
+        TF_VAR_archs: '["x86_64"]'
+        TF_VAR_signature_format: both
+        TF_VAR_verify: ${{github.event_name == 'pull_request_target'}}
+      run: |
+        terraform init -upgrade
+        terraform apply -auto-approve

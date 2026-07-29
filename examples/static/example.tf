@@ -36,6 +36,12 @@ variable "verify" {
   default     = true
 }
 
+variable "signature_format" {
+  description = "Signature format to use for signing. Valid values are 'legacy', 'bundle', or 'both'. Defaults to the provider setting."
+  type        = string
+  default     = null
+}
+
 provider "apko" {
   extra_repositories = ["https://packages.wolfi.dev/os"]
   extra_keyring      = ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
@@ -50,6 +56,8 @@ module "image" {
   config            = file("${path.module}/static.yaml")
 
   check_sbom = var.check_sbom
+
+  signature_format = var.signature_format
 
   # Simulate a "dev" variant
   extra_packages = ["busybox"]

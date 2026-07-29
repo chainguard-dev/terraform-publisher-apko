@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 terraform {
   required_providers {
     apko   = { source = "chainguard-dev/apko", version = ">= 0.29.10" }
-    cosign = { source = "chainguard-dev/cosign" }
+    cosign = { source = "chainguard-dev/cosign", version = ">= 0.4.2" }
   }
 }
 
@@ -28,6 +28,8 @@ resource "cosign_sign" "signature" {
 
   # Only keep the latest signature. We use these to ensure we regularly rebuild.
   conflict = "REPLACE"
+
+  signature_format = var.signature_format
 }
 
 locals { archs = toset(concat(["index"], data.apko_config.this.config.archs)) }
@@ -60,6 +62,8 @@ resource "cosign_attest" "this" {
 
   # Do not re-attest things that have not changed.
   conflict = "SKIPSAME"
+
+  signature_format = var.signature_format
 
   # Create SBOM attestations for each architecture.
   predicates {
