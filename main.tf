@@ -5,6 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 terraform {
   required_providers {
+    # NOTE: the `resolved_packages` attribute used below for SLSA
+    # resolvedDependencies requires a provider release that exposes it; bump the
+    # lower bound to that version once it is published.
     apko   = { source = "chainguard-dev/apko", version = ">= 0.29.10" }
     cosign = { source = "chainguard-dev/cosign", version = ">= 0.4.2" }
   }
@@ -89,7 +92,18 @@ resource "cosign_attest" "this" {
       buildDefinition = {
         buildType = "https://apko.dev/slsa-build-type@v1"
         # TODO(mattmoor): consider putting variables into `externalParameters`?
-        # TODO(mattmoor): how do we fit into the shape of `resolvedDependencies`?
+
+        # Document the fully resolved package set as SLSA resolved dependencies:
+        # one ResourceDescriptor per resolved .apk, with its name, download URL,
+        # and APKv2 package checksum
+        # (https://wiki.alpinelinux.org/wiki/Apk_spec#Package_Checksum_Field).
+        resolvedDependencies = [
+          for pkg in data.apko_config.this.resolved_packages[each.key] : {
+            name   = pkg.name
+            uri    = pkg.url
+            digest = { apkv2 = pkg.checksum }
+          }
+        ]
 
         # Use internal parameters to document the package resolution.
         internalParameters = {
