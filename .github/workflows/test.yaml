@@ -15,7 +15,15 @@ permissions: {}
 
 jobs:
   test:
-    name: Test
+    # This job runs twice per PR. The pull_request_target run uses the base
+    # branch's workflow with an OIDC token for this repo, so it can sign as
+    # test.yaml@refs/heads/main and verify those signatures. The
+    # pull_request run uses the PR's own copy of this workflow, so changes
+    # to it are tested before merge, but skips signature verification. The
+    # names are distinct so branch protection can require each one; the
+    # verification check stays pending on fork PRs until the
+    # acceptance-tests environment is approved.
+    name: ${{ github.event_name == 'pull_request_target' && 'Test with signature verification' || 'Test without signature verification' }}
     runs-on: ubuntu-latest
 
     # Fork PRs must wait for reviewer approval on the acceptance-tests
