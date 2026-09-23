@@ -74,7 +74,7 @@ jobs:
         go-version: '1.22'
         check-latest: true
 
-    - uses: chainguard-dev/actions/setup-registry@de68b87302e6266db5fb5220246f8aa46fe94b67 # main
+    - uses: chainguard-dev/actions/setup-registry@0bacfe710021b5ad6d8886a53a34c40072f2fc90 # main
       with:
         port: 5000
 
