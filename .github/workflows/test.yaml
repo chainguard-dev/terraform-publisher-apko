@@ -62,13 +62,17 @@ jobs:
       if: github.event_name == 'pull_request_target'
       with:
         # checkout v7 refuses a fork PR ref under pull_request_target unless
-        # this is set. The job needs the PR's merge commit to test signing,
+        # this is set. The job needs the PR's code to test signing,
         # and limits the blast radius: fork PRs need acceptance-tests
         # environment approval, no workflow-level permissions, contents:read
         # plus the id-token:write the signing tests need, no persisted
         # credentials, no Go cache, and harden-runner in block mode.
         allow-unsafe-pr-checkout: true
-        ref: refs/pull/${{ github.event.pull_request.number }}/merge
+        # Pin to the head commit of the triggering event, not the mutable
+        # refs/pull/N/merge: otherwise commits pushed after a reviewer
+        # approves the acceptance-tests deployment would run under that
+        # approval (time-of-check/time-of-use).
+        ref: ${{ github.event.pull_request.head.sha }}
         persist-credentials: false
 
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
