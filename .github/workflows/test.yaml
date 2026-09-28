@@ -61,6 +61,13 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       if: github.event_name == 'pull_request_target'
       with:
+        # checkout v7 refuses a fork PR ref under pull_request_target unless
+        # this is set. The job needs the PR's merge commit to test signing,
+        # and limits the blast radius: fork PRs need acceptance-tests
+        # environment approval, no workflow-level permissions, contents:read
+        # plus the id-token:write the signing tests need, no persisted
+        # credentials, no Go cache, and harden-runner in block mode.
+        allow-unsafe-pr-checkout: true
         ref: refs/pull/${{ github.event.pull_request.number }}/merge
         persist-credentials: false
 
@@ -73,6 +80,9 @@ jobs:
       with:
         go-version: '1.22'
         check-latest: true
+        # pull_request_target runs share the default branch's cache scope, so
+        # a PR run must not write a cache that main or release runs restore.
+        cache: false
 
     - uses: chainguard-dev/actions/setup-registry@0bacfe710021b5ad6d8886a53a34c40072f2fc90 # v1.6.36
       with:
