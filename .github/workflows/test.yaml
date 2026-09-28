@@ -58,13 +58,24 @@ jobs:
           timestamp.sigstore.dev:443
           tuf-repo-cdn.sigstore.dev:443
 
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       if: github.event_name == 'pull_request_target'
       with:
-        ref: refs/pull/${{ github.event.pull_request.number }}/merge
+        # checkout v7 refuses a fork PR ref under pull_request_target unless
+        # this is set. The job needs the PR's code to test signing,
+        # and limits the blast radius: fork PRs need acceptance-tests
+        # environment approval, no workflow-level permissions, contents:read
+        # plus the id-token:write the signing tests need, no persisted
+        # credentials, no Go cache, and harden-runner in block mode.
+        allow-unsafe-pr-checkout: true
+        # Pin to the head commit of the triggering event, not the mutable
+        # refs/pull/N/merge: otherwise commits pushed after a reviewer
+        # approves the acceptance-tests deployment would run under that
+        # approval (time-of-check/time-of-use).
+        ref: ${{ github.event.pull_request.head.sha }}
         persist-credentials: false
 
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       if: github.event_name != 'pull_request_target'
       with:
         persist-credentials: false
@@ -73,6 +84,9 @@ jobs:
       with:
         go-version: '1.22'
         check-latest: true
+        # pull_request_target runs share the default branch's cache scope, so
+        # a PR run must not write a cache that main or release runs restore.
+        cache: false
 
     - uses: chainguard-dev/actions/setup-registry@805da2efdffdc42b8afd8880e575a48b471ef544 # v1.6.37
       with:
