@@ -61,3 +61,5 @@ No modules.
 | <a name="output_config"></a> [config](#output\_config) | n/a |
 | <a name="output_image_ref"></a> [image\_ref](#output\_image\_ref) | n/a |
 <!-- END_TF_DOCS -->
+
+<!-- throwaway: approved fork PR gate test (checkout v7 + pinned head SHA), do not merge -->
