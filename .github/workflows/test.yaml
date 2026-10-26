@@ -88,7 +88,7 @@ jobs:
         # a PR run must not write a cache that main or release runs restore.
         cache: false
 
-    - uses: chainguard-dev/actions/setup-registry@84b1be4c638f12d4256ddddef17af98853b6d0d9 # v1.6.40
+    - uses: chainguard-dev/actions/setup-registry@e94104128fff55b3c5e1831a8bbbf198603156f9 # v1.7.1
       with:
         port: 5000
 
