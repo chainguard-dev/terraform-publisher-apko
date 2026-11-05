@@ -22,7 +22,7 @@ output "arch_to_image" {
     for k, v in apko_build.this.sboms : k => v.digest
   }
 
-  depends_on = [cosign_attest.this]
+  depends_on = [cosign_sign.signature, cosign_attest.this]
 }
 
 output "apko_version" {
