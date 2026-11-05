@@ -12,14 +12,14 @@ Currently the following supply chain metadata is surfaced:
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_apko"></a> [apko](#requirement\_apko) | >= 0.29.10 |
 | <a name="requirement_cosign"></a> [cosign](#requirement\_cosign) | >= 0.4.2 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_apko"></a> [apko](#provider\_apko) | >= 0.29.10 |
 | <a name="provider_cosign"></a> [cosign](#provider\_cosign) | >= 0.4.2 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
@@ -31,7 +31,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [apko_build.this](https://registry.terraform.io/providers/chainguard-dev/apko/latest/docs/resources/build) | resource |
 | [cosign_attest.this](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/attest) | resource |
 | [cosign_sign.signature](https://registry.terraform.io/providers/chainguard-dev/cosign/latest/docs/resources/sign) | resource |
@@ -41,11 +41,13 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_check_sbom"></a> [check\_sbom](#input\_check\_sbom) | Whether to run the NTIA conformance checker on the SBOMs we are attesting. | `bool` | `true` | no |
 | <a name="input_config"></a> [config](#input\_config) | The apko configuration file contents to build and publish. | `string` | n/a | yes |
 | <a name="input_default_annotations"></a> [default\_annotations](#input\_default\_annotations) | Default annotations to apply to this image. | `map(string)` | `{}` | no |
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
+| <a name="input_fulcio_url"></a> [fulcio\_url](#input\_fulcio\_url) | Address of the Fulcio instance to sign and attest against. Defaults to the cosign provider's, the public-good instance. | `string` | `null` | no |
+| <a name="input_rekor_url"></a> [rekor\_url](#input\_rekor\_url) | Address of the Rekor instance to sign and attest against. Defaults to the cosign provider's, the public-good instance. | `string` | `null` | no |
 | <a name="input_signature_format"></a> [signature\_format](#input\_signature\_format) | Signature format to use for signing. Valid values are 'legacy', 'bundle', or 'both'. Defaults to the provider setting. | `string` | `null` | no |
 | <a name="input_skip_attest"></a> [skip\_attest](#input\_skip\_attest) | If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor. | `bool` | `false` | no |
 | <a name="input_spdx_image"></a> [spdx\_image](#input\_spdx\_image) | The SPDX checker image to use to validate SBOMs. | `string` | `"ghcr.io/wolfi-dev/spdx-tools:latest"` | no |
@@ -54,7 +56,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_apko_version"></a> [apko\_version](#output\_apko\_version) | The version of the apko provider used to build this image. |
 | <a name="output_arch_to_image"></a> [arch\_to\_image](#output\_arch\_to\_image) | n/a |
 | <a name="output_archs"></a> [archs](#output\_archs) | n/a |

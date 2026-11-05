@@ -30,6 +30,8 @@ resource "cosign_sign" "signature" {
   conflict = "SKIPSAME"
 
   signature_format = var.signature_format
+  fulcio_url       = var.fulcio_url
+  rekor_url        = var.rekor_url
 }
 
 locals { archs = toset(concat(["index"], data.apko_config.this.config.archs)) }
@@ -64,6 +66,8 @@ resource "cosign_attest" "this" {
   conflict = "SKIPSAME"
 
   signature_format = var.signature_format
+  fulcio_url       = var.fulcio_url
+  rekor_url        = var.rekor_url
 
   # Create SBOM attestations for each architecture.
   predicates {

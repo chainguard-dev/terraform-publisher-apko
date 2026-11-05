@@ -1,0 +1,49 @@
+# Copyright 2026 Chainguard, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Formatting, validation and the README's generated docs.
+version: 1
+
+environment:
+  packages:
+    - bash
+    - git
+    - terraform-1.17~1.17
+    - terraform-docs
+  vars:
+    CHECKPOINT_DISABLE: "1"
+
+checks:
+  lint:
+    description: >-
+      terraform fmt over the module and its examples, then terraform validate
+      on the module.
+    trigger: [presubmit, postsubmit]
+    timeout: 10m
+    network:
+      egress:
+        # terraform init: the registry, then the providers' GitHub releases
+        # (checksums on github.com, assets redirected from there), and
+        # HashiCorp's releases for null.
+        - registry.terraform.io
+        - releases.hashicorp.com
+        - github.com
+        - release-assets.githubusercontent.com
+        - objects.githubusercontent.com
+    steps:
+      - name: fmt
+        cmd: [terraform, fmt, -check, -recursive]
+      - name: validate
+        script: |
+          terraform init -input=false
+          terraform validate
+
+  docs:
+    description: >-
+      Regenerates the README's inputs, outputs and requirements with
+      terraform-docs, failing if that changes it.
+    trigger: [presubmit, postsubmit]
+    timeout: 5m
+    script: |
+      terraform-docs markdown table --output-file README.md --output-mode inject .
+      git diff --exit-code README.md
