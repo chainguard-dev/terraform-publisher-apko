@@ -1,0 +1,177 @@
+# Copyright 2026 Chainguard, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Applies examples/static, signing and attesting against a Sigstore stack in
+# kind as one of its service accounts, as terraform-provider-cosign's keyless
+# check does in k3s. k3s cannot share the guest with dockerd, which the
+# module's SBOM check runs the SPDX checker in.
+version: 1
+
+checks:
+  example:
+    description: >-
+      Installs sigstore/helm-charts' scaffold chart (Fulcio, Rekor, Trillian,
+      a CT log, a TSA and TUF) into kind, then applies examples/static into a
+      local registry three times: as is, for x86_64 only without the SBOM
+      checks, and for x86_64 only with both signature formats. Each apply
+      verifies the signatures and attestations against the local instance.
+    environment:
+      packages:
+        - go-1.27~1.27
+        - bash
+        - coreutils
+        - docker-cli
+        - git
+        - grep
+        - helm-4
+        - kind
+        - kubectl-latest
+        - terraform-1.17~1.17
+      services: [docker, registry]
+      vars:
+        GOTOOLCHAIN: local
+        GOTMPDIR: /var/tmp
+        CHECKPOINT_DISABLE: "1"
+        TF_IN_AUTOMATION: "true"
+    trigger: [presubmit, postsubmit]
+    resources: medium-amd64
+    timeout: 30m
+    network:
+      egress:
+        # The TUF initialization helper
+        - proxy.golang.org
+        - sum.golang.org
+        - storage.googleapis.com
+        # The chart
+        - sigstore.github.io
+        - github.com
+        - release-assets.githubusercontent.com
+        # The chart's images and the SPDX checker
+        - ghcr.io
+        - pkg-containers.githubusercontent.com
+        - gcr.io
+        # kind's node image, through the docker-in-docker daemon's mirror,
+        # falling back to Docker Hub. Pulls from AWS us-east-1 get redirected
+        # to the S3 bucket, not CloudFront.
+        - mirror.gcr.io
+        - registry-1.docker.io
+        - index.docker.io
+        - auth.docker.io
+        - production.cloudfront.docker.com
+        - docker-images-prod.s3.dualstack.us-east-1.amazonaws.com
+        # terraform init: the registry, then the providers' GitHub release
+        # assets, and HashiCorp's releases for null.
+        - registry.terraform.io
+        - releases.hashicorp.com
+        - objects.githubusercontent.com
+        # The packages apko builds the image from
+        - packages.wolfi.dev
+        # The SPDX checker's license list
+        - spdx.org
+    shell: bash
+    script: |
+      set -euo pipefail
+
+      # On failure, show what the cluster was doing.
+      diagnose() {
+        kubectl get pods -A -o wide || true
+        kubectl get events -A --sort-by=.lastTimestamp | tail -40 || true
+        echo "=== fulcio-server"
+        kubectl -n fulcio-system logs deploy/fulcio-server --tail=40 || true
+      }
+      trap diagnose ERR
+
+      # Fulcio's chart trusts service account tokens from the issuer
+      # https://kubernetes.default.svc (kind's default ends in .cluster.local),
+      # and fetches the issuer's keys only from the issuer's own host.
+      # Trillian's MySQL 5.7 sizes its buffers by its open file limit, which
+      # kind's containerd sets to the most systemd allows and runs it out of
+      # memory, so a drop-in caps it at the usual default.
+      printf '[Service]\nLimitNOFILE=1048576\n' > /var/tmp/containerd-nofile.conf
+      cat > /var/tmp/kind.yaml <<'EOF'
+      kind: Cluster
+      apiVersion: kind.x-k8s.io/v1alpha4
+      nodes:
+        - role: control-plane
+          extraMounts:
+            - hostPath: /var/tmp/containerd-nofile.conf
+              containerPath: /etc/systemd/system/containerd.service.d/nofile.conf
+              readOnly: true
+          kubeadmConfigPatches:
+            - |
+              kind: ClusterConfiguration
+              apiServer:
+                extraArgs:
+                  service-account-issuer: https://kubernetes.default.svc
+                  service-account-jwks-uri: https://kubernetes.default.svc/openid/v1/jwks
+      EOF
+      kind create cluster --config /var/tmp/kind.yaml --wait 5m
+
+      # TUF serves the instance's keys, as cosign_verify reads Fulcio's roots
+      # from nowhere else. The job copying the keys there waits for the TSA,
+      # which signs with an ephemeral key as in the TSA chart's own CI.
+      helm install scaffold scaffold \
+        --repo https://sigstore.github.io/helm-charts --version 0.6.118 \
+        --set tuf.enabled=true,copySecretJob.enabled=true \
+        --set tsa.enabled=true,tsa.server.args.signer=memory \
+        --wait --wait-for-jobs --timeout 10m
+      kubectl -n tuf-system get secret tuf-root -o jsonpath='{.data.root}' | base64 -d > /var/tmp/tuf-root.json
+
+      # Route the cluster's service addresses through the kind node, whose
+      # kube-proxy forwards them, and give the guest their names too, as pods
+      # resolve them.
+      node=$(docker inspect -f '{{.NetworkSettings.Networks.kind.IPAddress}}' kind-control-plane)
+      ip route add 10.96.0.0/16 via "$node"
+      kubectl get svc -A --no-headers -o custom-columns=NS:.metadata.namespace,NAME:.metadata.name,IP:.spec.clusterIP |
+        awk '$3 != "None" {print $3, $2"."$1, $2"."$1".svc", $2"."$1".svc.cluster.local"}' >> /etc/hosts
+
+      # cosign_verify reads Sigstore's keys through sigstore/sigstore's TUF
+      # client, which `cosign initialize` skips when the mirror serves a
+      # trusted_root.json, so initialize it directly. Bundle signing reads the
+      # trusted root through sigstore-go, which takes the mirror from what
+      # this writes under TUF_ROOT and the initial root from TUF_ROOT_JSON.
+      export TUF_ROOT=/var/tmp/tuf TUF_ROOT_JSON=/var/tmp/tuf-root.json
+      mkdir -p /var/tmp/tuf-init
+      cat > /var/tmp/tuf-init/main.go <<'EOF'
+      package main
+
+      import (
+        "context"
+        "log"
+        "os"
+
+        "github.com/sigstore/sigstore/pkg/tuf"
+      )
+
+      func main() {
+        root, err := os.ReadFile(os.Args[2])
+        if err != nil {
+          log.Fatal(err)
+        }
+        if err := tuf.Initialize(context.Background(), os.Args[1], root); err != nil {
+          log.Fatal(err)
+        }
+      }
+      EOF
+      (
+        cd /var/tmp/tuf-init
+        go mod init tuf-init
+        go get github.com/sigstore/sigstore/pkg/tuf@v1.11.1
+        go run . http://tuf-server.tuf-system "$TUF_ROOT_JSON"
+      )
+
+      export TF_VAR_target_repository=localhost:5000/static
+      export TF_VAR_fulcio_url=http://fulcio-server.fulcio-system
+      export TF_VAR_rekor_url=http://rekor-server.rekor-system
+      export TF_VAR_oidc_issuer=https://kubernetes.default.svc
+      export TF_VAR_oidc_subject=https://kubernetes.io/namespaces/default/serviceaccounts/default
+      SIGSTORE_ID_TOKEN=$(kubectl create token default --audience sigstore --duration 1h)
+      export SIGSTORE_ID_TOKEN
+
+      cd examples/static
+      terraform init -input=false
+      terraform apply -input=false -auto-approve
+      TF_VAR_archs='["x86_64"]' TF_VAR_check_sbom=false \
+        terraform apply -input=false -auto-approve
+      TF_VAR_archs='["x86_64"]' TF_VAR_signature_format=both \
+        terraform apply -input=false -auto-approve
