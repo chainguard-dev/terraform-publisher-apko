@@ -42,6 +42,28 @@ variable "signature_format" {
   default     = null
 }
 
+variable "fulcio_url" {
+  description = "The Fulcio instance to sign against and verify with."
+  type        = string
+  default     = "https://fulcio.sigstore.dev"
+}
+
+variable "rekor_url" {
+  description = "The Rekor instance to sign against and verify with."
+  type        = string
+  default     = "https://rekor.sigstore.dev"
+}
+
+variable "oidc_issuer" {
+  description = "The OIDC issuer of the identity the image is signed as."
+  type        = string
+}
+
+variable "oidc_subject" {
+  description = "The subject of the identity the image is signed as."
+  type        = string
+}
+
 provider "apko" {
   extra_repositories = ["https://packages.wolfi.dev/os"]
   extra_keyring      = ["https://packages.wolfi.dev/os/wolfi-signing.rsa.pub"]
@@ -58,6 +80,8 @@ module "image" {
   check_sbom = var.check_sbom
 
   signature_format = var.signature_format
+  fulcio_url       = var.fulcio_url
+  rekor_url        = var.rekor_url
 
   # Simulate a "dev" variant
   extra_packages = ["busybox"]
@@ -81,14 +105,14 @@ data "cosign_verify" "image-signatures" {
       images = [{ glob = "**" }]
       authorities = [{
         keyless = {
-          url = "https://fulcio.sigstore.dev"
+          url = var.fulcio_url
           identities = [{
-            issuer  = "https://token.actions.githubusercontent.com"
-            subject = "https://github.com/chainguard-dev/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
+            issuer  = var.oidc_issuer
+            subject = var.oidc_subject
           }]
         }
         ctlog = {
-          url = "https://rekor.sigstore.dev"
+          url = var.rekor_url
         }
       }]
     }
@@ -109,14 +133,14 @@ data "cosign_verify" "sbom-attestations" {
       images = [{ glob = "**" }]
       authorities = [{
         keyless = {
-          url = "https://fulcio.sigstore.dev"
+          url = var.fulcio_url
           identities = [{
-            issuer  = "https://token.actions.githubusercontent.com"
-            subject = "https://github.com/chainguard-dev/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
+            issuer  = var.oidc_issuer
+            subject = var.oidc_subject
           }]
         }
         ctlog = {
-          url = "https://rekor.sigstore.dev"
+          url = var.rekor_url
         }
         attestations = [
           {
@@ -148,14 +172,14 @@ data "cosign_verify" "config-attestations" {
       images = [{ glob = "**" }]
       authorities = [{
         keyless = {
-          url = "https://fulcio.sigstore.dev"
+          url = var.fulcio_url
           identities = [{
-            issuer  = "https://token.actions.githubusercontent.com"
-            subject = "https://github.com/chainguard-dev/terraform-publisher-apko/.github/workflows/test.yaml@refs/heads/main"
+            issuer  = var.oidc_issuer
+            subject = var.oidc_subject
           }]
         }
         ctlog = {
-          url = "https://rekor.sigstore.dev"
+          url = var.rekor_url
         }
         attestations = [
           {
