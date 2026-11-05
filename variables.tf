@@ -48,3 +48,15 @@ variable "signature_format" {
   default     = null
   description = "Signature format to use for signing. Valid values are 'legacy', 'bundle', or 'both'. Defaults to the provider setting."
 }
+
+variable "fulcio_url" {
+  type        = string
+  default     = null
+  description = "Address of the Fulcio instance to sign and attest against. Defaults to the cosign provider's, the public-good instance."
+}
+
+variable "rekor_url" {
+  type        = string
+  default     = null
+  description = "Address of the Rekor instance to sign and attest against. Defaults to the cosign provider's, the public-good instance."
+}

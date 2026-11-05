@@ -46,6 +46,8 @@ No modules.
 | <a name="input_config"></a> [config](#input\_config) | The apko configuration file contents to build and publish. | `string` | n/a | yes |
 | <a name="input_default_annotations"></a> [default\_annotations](#input\_default\_annotations) | Default annotations to apply to this image. | `map(string)` | `{}` | no |
 | <a name="input_extra_packages"></a> [extra\_packages](#input\_extra\_packages) | Additional packages to install into this image. | `list(string)` | `[]` | no |
+| <a name="input_fulcio_url"></a> [fulcio\_url](#input\_fulcio\_url) | Address of the Fulcio instance to sign and attest against. Defaults to the cosign provider's, the public-good instance. | `string` | `null` | no |
+| <a name="input_rekor_url"></a> [rekor\_url](#input\_rekor\_url) | Address of the Rekor instance to sign and attest against. Defaults to the cosign provider's, the public-good instance. | `string` | `null` | no |
 | <a name="input_signature_format"></a> [signature\_format](#input\_signature\_format) | Signature format to use for signing. Valid values are 'legacy', 'bundle', or 'both'. Defaults to the provider setting. | `string` | `null` | no |
 | <a name="input_skip_attest"></a> [skip\_attest](#input\_skip\_attest) | If true, skip the attestations step. This is NOT RECOMMENDED, and should only be used when attestations may be too big for Rekor. | `bool` | `false` | no |
 | <a name="input_spdx_image"></a> [spdx\_image](#input\_spdx\_image) | The SPDX checker image to use to validate SBOMs. | `string` | `"ghcr.io/wolfi-dev/spdx-tools:latest"` | no |
